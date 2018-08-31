@@ -1,0 +1,104 @@
+<style>
+input[type=checkbox].bigbox {
+    width: 50px;
+    height: 50px;
+}
+.bigbutton {
+    height: 80px;
+}
+</style>
+
+<div class="card">
+    <div class="card-header">
+    <h5>{category}</h5>
+    <h6>{items.length}</h6>
+    </div>
+
+    <div class="card-body">
+            {#each items as {name}, idx}
+
+            <div class="input-group mb-3">
+            <div class=" form-control bigbutton">
+                <button class="
+                    btn btn-outline-success
+                    list-group-item-action
+                    d-flex
+                    justify-content-between
+                    align-items-center "
+                    on:click="checkItem(idx)">
+
+                        <input
+                            type="checkbox"
+                            class="bigbox"
+                            bind:group=checked
+                            value={idx}
+                            disabled
+                            aria-label="Checkbox for following text input"/>
+
+                        {name}
+                </button>
+                </div>
+
+
+                <div class=" input-group-append">
+                    <button
+                        class="btn btn-outline-danger"
+                        on:click="deleteItem(idx)"
+                        >
+                        &times;
+                    </button>
+                </div>
+
+            </div>
+
+            {/each}
+    </div>
+</div>
+
+<script>
+export default {
+    oncreate() {
+        const { items } = this.get();
+        const checked = items.map(({done}, idx) => ({done, idx}) )
+            .filter(({done}) => done)
+            .map(({idx}) => idx)
+        this.set({checked});
+    },
+    onupdate() {
+        const {items, checked} = this.get();
+        console.table(items)
+    },
+
+    data: () => ({
+        items: [
+      //      {name: "Milch", done: false},
+      //      {name: "Kaffee", done: true},
+      //      {name: "Bier", done: false},
+        ],
+        checked: [],
+    }),
+
+    methods: {
+        checkItem(idx) {
+            const {items} = this.get();
+            items[idx].done = !items[idx].done;
+            const checked = items.map(({done}, idx) => ({done, idx}) )
+                .filter(({done}) => done)
+                .map(({idx}) => idx)
+
+            this.set({checked, items: [...items]});
+        },
+
+        deleteItem(idx) {
+            const {items} = this.get();
+            const newItems = [...items.filter((i, index) => index !== idx)];
+            const newChecked = newItems.map(({done}, idx) => ({done, idx}) )
+                .filter(({done}) => done)
+                .map(({idx}) => idx)
+
+            this.set({items: newItems, checked: newChecked});
+        }
+    }
+
+}
+</script>

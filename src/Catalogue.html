@@ -1,0 +1,65 @@
+<style>
+</style>
+
+<div class="card">
+    <div class="card-header">
+    <h5 class="card-title">Items</h5>
+    add one!
+    </div>
+    <div class="card-body">
+
+        <div class="list-group">
+
+            {#each items as {name, category}}
+            <button
+                class="btn category-btn list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                on:click="fire('addItem', {name, category})"
+                >
+                {name} <span class="badge badge-primary">{category}</span>
+            </button>
+            {/each}
+
+            {#if newItemName}
+            <button class="btn category-btn list-group-item-action d-flex justify-content-between align-items-center disabled" disabled>
+                {newItemName} <span class="badge badge-primary">{newItemCategory}</span>
+            </button>
+            {/if}
+        </div>
+
+        <div class="input-group mb-3">
+            <input bind:value=newItemName value="" placeholder="new item"/>
+            {#if newItemName}
+            <input bind:value=newItemCategory value="" placeholder="category" type="text"/>
+            <div class="input-group-append">
+                <button on:click="addNewItem()" class="btn btn-success" type="button">add</button>
+            </div>
+            {/if}
+        </div>
+
+    </div>
+</div>
+
+<script>
+export default {
+    data: () => ({
+        catagories: [ "shopping" ],
+        newItemName: "",
+        newItemCategory: "",
+        items: [
+            { name: "Milch", category: "shopping" },
+            { name: "Butter", category: "shopping" },
+            { name: "Mehl", category: "shopping" },
+            { name: "Bier", category: "shopping" },
+            { name: "Saugen", category: "wohnung" },
+            { name: "Hingehen", category: "arbeit" },
+        ]
+    }),
+    methods: {
+        addNewItem() {
+            const {items, newItemName, newItemCategory} = this.get();
+            const newItem = ({name: newItemName, category: newItemCategory})
+            this.set({items: [...items, newItem], newItemName: null, newItemCategory: 'shopping'})
+        }
+    }
+}
+</script>
