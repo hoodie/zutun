@@ -4,13 +4,15 @@
 
 <div class="container-fluid">
     <div class="row">
+        {#if $showCatalogue}
         <div class="col">
             <Catalogue on:addItem="addItem(event)"/>
         </div>
+        {/if}
         <div class="col">
-        {#each categories as category}
-            {#if items[category].length > 0}
-            <Todo category="{category}" bind:items=items[category]/>
+        {#each $categories as category}
+            {#if $items.filter(({category: c}) => c === category).length > 0}
+            <Todo category="{category}" />
             {/if}
         {/each}
         </div>
@@ -18,47 +20,19 @@
 </div>
 
 <script>
-    import { splice } from 'svelte-extras';
-
     export default {
-        onupdate({current}) {
-        },
 
         components: {
             Catalogue: './Catalogue.html',
             Todo: './Todo.html'
         },
 
-        computed: {
-            categories: ({items}) => Object.keys(items)
-        },
-
-        data: () => ({
-            items:{
-                shopping: [
-                    { name: "Mate", done: false },
-                ],
-                wohnung: [
-                    {name: "Staubsaugen", done: false},
-                ]
-            }
-        }),
-
         methods: {
-            addItem({name, category}) {
-                console.log({name, category})
-                const {items, categories} = this.get();
-                const item = {name, done: false}
+            addItem({name, category, price}) {
+                const {items} = this.store.get();
+                const item = {name, category, price, done: false}
 
-                const newCategories = [...Array.from(new Set(categories.concat(category)))];
-                items[category]
-
-                const newItems = {...items};
-                newItems[category] = newItems[category] ?
-                newItems[category].concat(item) : [item];
-
-                console.dir({items: {...newItems}, categories: newCategories})
-                this.set({items: {...newItems}, categories: newCategories})
+                this.store.set({items:  [...items, item]})
             }
         }
     }
