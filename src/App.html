@@ -4,36 +4,65 @@
 
 <div class="container-fluid">
     <div class="row">
-        {#if $showCatalogue}
-        <div class="col">
-            <Catalogue on:addItem="addItem(event)"/>
+
+        {#if showCatalogue || $items.length === 0}
+        <div class="col-md-6">
+            <Catalogue on:addItem="addItem(event)" on:close=closeCatalogue(0)/>
         </div>
         {/if}
-        <div class="col">
-        {#each $categories as category}
-            {#if $items.filter(({category: c}) => c === category).length > 0}
-            <Todo category="{category}" />
-            {/if}
-        {/each}
+
+        <div class="col" transition:slide>
+            <div class="row">
+                {#each $categories as category}
+                <div class="col-xl-4 col-md-6">
+                    {#if $items.filter(({category: c}) => c === category).length > 0}
+                    <Todo category="{category}" on:showCatalogue=showCatalogue() />
+                    {/if}
+                </div>
+                {/each}
+            </div>
         </div>
+
     </div>
 </div>
 
 <script>
-    export default {
+import { slide } from 'svelte-transitions';
+export default {
 
-        components: {
-            Catalogue: './Catalogue.html',
-            Todo: './Todo.html'
+    components: {
+        Catalogue: './Catalogue.html',
+        Todo: './Todo.html'
+    },
+
+    data: () => ({
+        showCatalogue: !true
+    }),
+
+    methods: {
+        addItem({name, category, price}) {
+            const {items} = this.store.get();
+            const item = {name, category, price, done: false}
+
+            this.store.set({items:  [...items, item]})
+            this.closeCatalogue(1500)
         },
 
-        methods: {
-            addItem({name, category, price}) {
-                const {items} = this.store.get();
-                const item = {name, category, price, done: false}
+        showCatalogue() {
+            clearTimeout(this.TIMEOUT);
+            console.debug(`showing catalogue`);
+            this.set({ showCatalogue: true});
+        },
 
-                this.store.set({items:  [...items, item]})
+        closeCatalogue(timeout) {
+            console.debug(`closing Catalogue in ${timeout}ms`);
+            if (this.TIMEOUT) {
+                clearTimeout(this.TIMEOUT);
             }
-        }
-    }
+            this.TIMEOUT = setTimeout(() => {this.set({showCatalogue: false})}, timeout)
+        },
+    },
+
+    transitions: {slide}
+}
 </script>

@@ -12,12 +12,14 @@ input[type=checkbox].bigbox {
 
 <div class="card">
     <div class="card-header">
-        <h5>{category}
-        {#if $sumByCategory[category]}
-        <small>
-        ( {$sumByCategory[category]} € )
-        </small>
-        {/if}
+        <h5>
+            {category}
+            {#if $sumByCategory[category]}
+            <small> ( {formatPrice($sumByCategory[category] )} ) </small>
+            {/if}
+            <button type="button" class="close" title="Close" on:click="fire('close', {name})">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </h5>
         <div class="progress" style="height: 30px">
             <div class="progress-bar"
@@ -30,10 +32,10 @@ input[type=checkbox].bigbox {
     </div>
 
     <div class="card-body">
-            <div class="row">
+            <div class="row mb-4">
                 {#each $items as {name, price, category: itemCat}, idx}
                 {#if category === itemCat}
-                <div class="input-group mb-3">
+                <div class="input-group mb-1">
 
                     <div class="input-group-prepend">
                         <button
@@ -63,7 +65,7 @@ input[type=checkbox].bigbox {
                                 aria-label="Checkbox for following text input"/>
                             {name}
                             {#if price}
-                            ({price})
+                            ({formatPrice(price)})
                             {/if}
                         </button>
                     </div>
@@ -78,11 +80,18 @@ input[type=checkbox].bigbox {
 
                 <div class="input-group">
 
-                    <input type="text" class="form-control" aria-label="item"  style="display: {showCustomMenu ? 'block' : 'none'};"   placeholder="new item" bind:value=customItemName/>
-                    <input type="text" class="form-control" aria-label="price" style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};" placeholder="price"  bind:value=customItemPrice/>
-                    <button type="button" class="btn btn-success" style="display: {!showCustomMenu ? 'block' : 'none'};" on:click="toggleShowCatalogue()">add</button>
+                    <input type="text" class="form-control" aria-label="item"
+                    style="display: {showCustomMenu ? 'block' : 'none'};" placeholder="new item"
+                    bind:value=customItemName
+                    />
 
-                    <div class="input-group-append">
+                    <input type="text" class="form-control" aria-label="price"
+                    style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};" placeholder="price"
+                    bind:value=customItemPrice
+                    />
+                    <button type="button" class="btn btn-success" style="display: {!showCustomMenu ? 'block' : 'none'};" on:click="fire('showCatalogue')">add</button>
+
+                    <div class="input-group-append" tansition:slide>
                         <button type="button" class="btn btn-outline-warning" style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};" on:click="toggleShowAddPrice()">€</button>
                         <button type="button" class="btn btn-primary" style="display: {showCustomMenu? 'block' : 'none'};" on:click="addCustomItem()">add</button>
 
@@ -123,6 +132,10 @@ export default {
         customItemPrice: null,
     }),
 
+    helpers: {
+        formatPrice: (price /*: number*/)/*: string*/ =>
+            (typeof price === 'number') && price.toFixed(2).toString().replace('.', ',') + `€`
+    },
 
     computed: {
         showMenu: ({itemMenu}) => (idx) => itemMenu === idx ? 'show' : ''
@@ -145,22 +158,26 @@ export default {
             if (customItemName) {
                 const item = {name: customItemName, price: Number.parseFloat(customItemPrice), category};
                 this.store.set({ items: [...items, item] });
+                this.set({
+                    customItemName: null,
+                    customItemPrice: null,
+                    showAddPrice: false,
+                    showCustomMenu: false,
+                });
             }
         },
 
         toggleAddMenu() {
             const {showCustomMenu} = this.get();
-            this.set({showCustomMenu: !showCustomMenu});
+            this.set({
+                showCustomMenu: !showCustomMenu,
+                showAddPrice: false
+            });
         },
 
         toggleShowAddPrice() {
             const {showAddPrice} = this.get();
             this.set({showAddPrice: !showAddPrice});
-        },
-
-        toggleShowCatalogue() {
-            const {showCatalogue} = this.store.get();
-            this.store.set({showCatalogue: !showCatalogue});
         },
 
         toggleItemMenu(idx) {
@@ -182,7 +199,6 @@ export default {
             this.set({checked, itemMenu: -1});
             this.store.set({items: newItems})
         }
-    }
-
+    },
 }
 </script>
