@@ -1,3 +1,3 @@
-# Tap Tab
+# Zu Tun!
 
-screw todos: keep your café's tap in a single tab
+http://hoodie.github.io/zutun
