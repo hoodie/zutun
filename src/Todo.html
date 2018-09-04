@@ -63,9 +63,16 @@
 
                         <div class="dropdown-menu {showMenu(idx)}">
                             <button class="dropdown-item">save</button>
+                            <button class="dropdown-item" on:click="toggleItemRename(idx)">rename</button>
                             <div role="separator" class="dropdown-divider"></div>
                             <button class="dropdown-item" on:click="deleteItem(idx)"> delete </button>
                         </div>
+                        {#if showRename(idx)}
+                        <div class="input-group" transition:fade>
+                            <input type="text" placeholder="{name}" bind:value="newItemName" transition:fade/>
+                            <button class="btn btn-info" on:click="renameItem(idx)">done</button>
+                        </div>
+                        {/if}
 
                     </div>
 
@@ -159,6 +166,8 @@ export default {
     data: () => ({
         items: [],
         itemMenu: -1,
+        itemRename: -1,
+        newItemName: null,
         showCustomMenu: false,
         showAddPrice: false,
         customItemName: null,
@@ -171,7 +180,8 @@ export default {
     },
 
     computed: {
-        showMenu: ({itemMenu}) => (idx) => itemMenu === idx ? 'show' : ''
+        showMenu: ({itemMenu}) => (idx) => itemMenu === idx ? 'show' : '',
+        showRename: ({itemRename}) => (idx) => itemRename === idx ? 'show' : ''
     },
     transitions: {fade},
     methods: {
@@ -208,6 +218,24 @@ export default {
         toggleShowAddPrice() {
             const {showAddPrice} = this.get();
             this.set({showAddPrice: !showAddPrice});
+        },
+
+        toggleItemRename(idx) {
+            const {itemRename} = this.get();
+            if (itemRename== idx) {
+                this.set({itemRename: -1 })
+            } else {
+                this.set({itemRename: idx, itemMenu: -1})
+            }
+        },
+
+        renameItem(idx){
+            const {newItemName} = this.get();
+            const {items} = this.store.get();
+            const newItems = items;
+            newItems[idx].name = newItemName;
+            this.store.set({items: [...newItems]})
+            this.set({itemRename: -1, newItemName: null})
         },
 
         toggleItemMenu(idx) {
