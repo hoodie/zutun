@@ -63,7 +63,7 @@
 
                         <div class="dropdown-menu {showMenu(idx)}">
                             <button class="dropdown-item">save</button>
-                            <button class="dropdown-item" on:click="toggleItemRename(idx)">rename</button>
+                            <button class="dropdown-item" on:click="toggleItemRename(idx, name)">rename</button>
                             <div role="separator" class="dropdown-divider"></div>
                             <button class="dropdown-item" on:click="deleteItem(idx)"> delete </button>
                         </div>
@@ -76,6 +76,7 @@
 
                     </div>
 
+                    {#if !showRename(idx)}
                     <div class="form-control bigbutton">
                         <button
                             class="btn btn-outline-success list-group-item-action d-flex align-items-center"
@@ -87,6 +88,7 @@
                             {/if}
                         </button>
                     </div>
+                    {/if}
 
 
                 </div>
@@ -220,12 +222,12 @@ export default {
             this.set({showAddPrice: !showAddPrice});
         },
 
-        toggleItemRename(idx) {
+        toggleItemRename(idx, name) {
             const {itemRename} = this.get();
             if (itemRename== idx) {
                 this.set({itemRename: -1 })
             } else {
-                this.set({itemRename: idx, itemMenu: -1})
+                this.set({itemRename: idx, itemMenu: -1, newItemName: name})
             }
         },
 
