@@ -15,9 +15,13 @@
         -moz-transform: scale(2);
         -webkit-transform: scale(2);
     }
+
+    .addbutton {
+        float: right;
+    }
 </style>
 
-<div class="card">
+<div class="card" transition:fade>
     <div class="card-header">
         <h5>
             {category}
@@ -31,10 +35,14 @@
         <div class="progress" style="height: 30px">
             <div class="progress-bar"
                 role="progressbar"
-                style="width: {($progress[category].done / $progress[category].all) * 100 }%;"
-                aria-valuenow={($progress[category].done / $progress[category].all) * 100}
+                style="width: {$progress[category].percent}%;"
+                aria-valuenow={$progress[category].percent}
                 aria-valuemin="0"
-                aria-valuemax="100">{Math.floor(($progress[category].done / $progress[category].all) * 100)}%</div>
+                aria-valuemax="100">
+            {#if $progress[category].done > 0}
+            {$progress[category].done} / {$progress[category].all}
+            {/if}
+            </div>
         </div>
     </div>
 
@@ -46,7 +54,7 @@
 
                     <div class="input-group-prepend">
                         <button
-                            class="btn btn-dark dropdown-toggle"
+                            class="btn btn-outline-dark dropdown-toggle"
                             type="button"
                             data-toggle="dropdown"
                             aria-haspopup="true"
@@ -62,7 +70,9 @@
                     </div>
 
                     <div class="form-control bigbutton">
-                        <button class="btn btn-outline-success list-group-item-action d-flex align-items-center" on:click="checkItem(idx)">
+                        <button
+                            class="btn btn-outline-success list-group-item-action d-flex align-items-center"
+                            on:click="checkItem(idx)">
                             <input type="checkbox" checked={done}/>
                             {name}
                             {#if price}
@@ -77,27 +87,57 @@
                 {/each}
             </div>
 
-            <div class="row">
+            <div class="row addbutton">
 
                 <div class="input-group">
+                    <div class="input-group-prepend">
 
-                    <input type="text" class="form-control" aria-label="item"
-                    style="display: {showCustomMenu ? 'block' : 'none'};" placeholder="new item"
-                    bind:value=customItemName
-                    />
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            on:click="toggleAddMenu()">
+                            {showCustomMenu ? '-' : '+'}
+                        </button>
 
-                    <input type="text" class="form-control" aria-label="price"
-                    style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};" placeholder="price"
-                    bind:value=customItemPrice
-                    />
-                    <button type="button" class="btn btn-success" style="display: {!showCustomMenu ? 'block' : 'none'};" on:click="fire('showCatalogue')">add</button>
+                        <input
+                            type="text"
+                            class="form-control"
+                            aria-label="item"
+                            style="display: {showCustomMenu ? 'block' : 'none'};"
+                            placeholder="new item"
+                            bind:value=customItemName/>
 
-                    <div class="input-group-append" tansition:slide>
-                        <button type="button" class="btn btn-outline-warning" style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};" on:click="toggleShowAddPrice()">€</button>
-                        <button type="button" class="btn btn-primary" style="display: {showCustomMenu? 'block' : 'none'};" on:click="addCustomItem()">add</button>
-
-                        <button type="button" class="btn btn-outline-secondary" on:click="toggleAddMenu()">{showCustomMenu ? '-' : '+'}</button>
+                        <button
+                            type="button"
+                            class="btn btn-outline-warning"
+                            style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};" on:click="toggleShowAddPrice()">
+                            €
+                        </button>
                     </div>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            aria-label="price"
+                    style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};" placeholder="price"
+                            bind:value=customItemPrice/>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-success"
+                        style="display: {!showCustomMenu ? 'block' : 'none'};"
+                        on:click="fire('showCatalogue')">
+                        add
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        style="display: {showCustomMenu? 'block' : 'none'};"
+                        on:click="addCustomItem()">
+                        add
+                    </button>
 
                 </div>
 
@@ -107,6 +147,8 @@
 </div>
 
 <script>
+import { fade } from 'svelte-transitions';
+
 export default {
     oncreate() {
     },
@@ -131,6 +173,7 @@ export default {
     computed: {
         showMenu: ({itemMenu}) => (idx) => itemMenu === idx ? 'show' : ''
     },
+    transitions: {fade},
     methods: {
         checkItem(idx) {
             const {items} = this.store.get();

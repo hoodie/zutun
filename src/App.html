@@ -6,7 +6,7 @@
     <div class="row">
 
         {#if showCatalogue || $items.length === 0}
-        <div class="col-md-6">
+        <div class="col-md-6" transition:slide>
             <Catalogue on:addItem="addItem(event)" on:close=closeCatalogue(0)/>
         </div>
         {/if}

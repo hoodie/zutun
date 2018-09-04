@@ -57,13 +57,17 @@ store.compute('progress', ['items'],
 	(items) => {
 		const progresses = {};
 		items.forEach(item => {
-			progresses[item.category] = progresses[item.category] || {open: 0, done: 0, all: 0};
+			const progress = progresses[item.category] || {open: 0, done: 0, all: 0, percent: 0};
 			if (item.done) {
-				progresses[item.category].done += 1;
+				progress.done += 1;
 			} else {
-				progresses[item.category].open += 1;
+				progress.open += 1;
 			}
-			progresses[item.category].all+= 1;
+			progress.all+= 1;
+			progress.percent = Math.floor((progress.done / progress.all) * 100)
+
+			progresses[item.category] = progress
+
 		});
 		return progresses;
 	}
