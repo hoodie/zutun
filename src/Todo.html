@@ -1,13 +1,20 @@
 <style>
-input[type=checkbox].bigbox {
-    width: 50px;
-    height: 50px;
-}
-.bigbutton {
-    height: 64px;
-    padding:0;
-    border:0
-}
+    .bigbutton {
+        height: 65px;
+        padding: 0;
+        border: 0
+    }
+
+    .bigbutton button {
+        height: 65px;
+    }
+
+    .bigbutton button input[type=checkbox] {
+        margin: 0 1em;
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+    }
 </style>
 
 <div class="card">
@@ -33,7 +40,7 @@ input[type=checkbox].bigbox {
 
     <div class="card-body">
             <div class="row mb-4">
-                {#each $items as {name, price, category: itemCat}, idx}
+                {#each $items as {name, done, price, category: itemCat}, idx}
                 {#if category === itemCat}
                 <div class="input-group mb-1">
 
@@ -47,22 +54,16 @@ input[type=checkbox].bigbox {
                             on:click="toggleItemMenu(idx)"></button>
 
                         <div class="dropdown-menu {showMenu(idx)}">
-                            <button class="dropdown-item"> remember </button>
+                            <button class="dropdown-item">save</button>
                             <div role="separator" class="dropdown-divider"></div>
                             <button class="dropdown-item" on:click="deleteItem(idx)"> delete </button>
                         </div>
 
                     </div>
 
-                    <div class=" form-control bigbutton">
-                        <button class=" btn btn-outline-success list-group-item-action d-flex align-items-center" on:click="checkItem(idx)">
-                            <input
-                                type="checkbox"
-                                class="bigbox"
-                                bind:group=checked
-                                value={idx}
-                                disabled
-                                aria-label="Checkbox for following text input"/>
+                    <div class="form-control bigbutton">
+                        <button class="btn btn-outline-success list-group-item-action d-flex align-items-center" on:click="checkItem(idx)">
+                            <input type="checkbox" checked={done}/>
                             {name}
                             {#if price}
                             ({formatPrice(price)})
@@ -108,23 +109,13 @@ input[type=checkbox].bigbox {
 <script>
 export default {
     oncreate() {
-        const {items}  = this.store.get();
-
-        const checked = items.map(({done}, idx) => ({done, idx}) )
-            .filter(({done}) => done)
-            .map(({idx}) => idx)
-        this.set({checked});
-
     },
 
     onupdate() {
-        const state = this.get();
-        console.dir({state});
     },
 
     data: () => ({
         items: [],
-        checked: [],
         itemMenu: -1,
         showCustomMenu: false,
         showAddPrice: false,
@@ -145,10 +136,6 @@ export default {
             const {items} = this.store.get();
 
             items[idx].done = !items[idx].done;
-            const checked = items.map(({ done }, idx) => ({ done, idx }))
-                .filter(({ done }) => done)
-                .map(({ idx }) => idx)
-            this.set({ checked });
             this.store.set({ items: [...items] });
         },
 
@@ -193,10 +180,7 @@ export default {
             const {items} = this.store.get();
 
             const newItems = [...items.filter((i, index) => index !== idx)];
-            const checked = newItems.map(({done}, idx) => ({done, idx}) )
-                .filter(({done}) => done)
-                .map(({idx}) => idx)
-            this.set({checked, itemMenu: -1});
+            this.set({itemMenu: -1});
             this.store.set({items: newItems})
         }
     },

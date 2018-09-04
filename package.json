@@ -19,6 +19,9 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
     "dev": "webpack-serve --content docs --hot-client"
-
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.3.1",
+    "svelte-awesome": "^1.4.0"
   }
 }
