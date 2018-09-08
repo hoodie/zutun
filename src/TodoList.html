@@ -6,13 +6,19 @@
 
 <div class="card" transition:fade>
     <div class="card-header">
-        <h4>
+        <h4 on:click="set({foldList: !foldList})">
             {category}
             {#if $sumByCategory[category]}
             <small> ( {formatPrice($sumByCategory[category] )} ) </small>
             {/if}
-            <button type="button" class="close" title="Close" on:click="fire('close', {name})">
-                <span aria-hidden="true">&times;</span>
+            <button type="button" class="close" title="Close">
+                <span aria-hidden="true">
+                {#if foldList}
+                &#95;
+                {:else}
+                &square;
+                {/if}
+                </span>
             </button>
         </h4>
 
@@ -30,6 +36,7 @@
         </div>
     </div>
 
+    {#if foldList}
     <div class="card-body">
         <div class="row mb-4">
             {#each $items as item, idx}
@@ -112,8 +119,9 @@
             </div>
 
         </div>
-
     </div>
+    {/if}
+
 </div>
 
 <script>
@@ -125,6 +133,7 @@ export default {
     components: { TodoEntry: './TodoEntry.html' },
 
     data: () => ({
+        foldList: false,
         showCustomMenu: false,
         showAddPrice: false,
         customItemName: null,
