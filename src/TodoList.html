@@ -1,0 +1,142 @@
+<style>
+    .addbutton {
+        float: right;
+    }
+</style>
+
+<div class="card" transition:fade>
+    <div class="card-header">
+        <h5>
+            {category}
+            {#if $sumByCategory[category]}
+            <small> ( {formatPrice($sumByCategory[category] )} ) </small>
+            {/if}
+            <button type="button" class="close" title="Close" on:click="fire('close', {name})">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </h5>
+        <div class="progress" style="height: 30px">
+            <div class="progress-bar"
+                role="progressbar"
+                style="width: {$progress[category].percent}%;"
+                aria-valuenow={$progress[category].percent}
+                aria-valuemin="0"
+                aria-valuemax="100">
+            {#if $progress[category].done > 0}
+                {$progress[category].done} / {$progress[category].all}
+            {/if}
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div class="row mb-4">
+            {#each $items as {name, done, price, category: itemCat}, idx}
+            {#if category === itemCat}
+
+            <TodoEntry
+                item="{{name, done, price, category, idx}}"
+                idx="{idx}"
+            />
+
+            {/if}
+            {/each}
+        </div>
+
+        <div class="row addbutton">
+
+            <div class="input-group">
+                <div class="input-group-prepend">
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        on:click="set({showCustomMenu: !showCustomMenu, showAddPrice: false})">
+                        {showCustomMenu ? '-' : '+'}
+                    </button>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        aria-label="item"
+                        style="display: {showCustomMenu ? 'block' : 'none'};"
+                        placeholder="new item"
+                        bind:value=customItemName/>
+
+                    <button
+                        type="button"
+                        class="btn btn-outline-warning"
+                        style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};"
+                        on:click="set({showAddPrice: !showAddPrice})">
+                        €
+                    </button>
+                </div>
+
+                <input
+                    type="text"
+                    class="form-control"
+                    aria-label="price"
+                    style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};"
+                    placeholder="price"
+                    bind:value=customItemPrice/>
+
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    style="display: {!showCustomMenu ? 'block' : 'none'};"
+                    on:click="fire('showCatalogue')">
+                    add
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    style="display: {showCustomMenu? 'block' : 'none'};"
+                    on:click="addCustomItem()">
+                    add
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+import { fade } from 'svelte-transitions';
+import {formatPrice} from './helpers';
+
+export default {
+    transitions: {fade},
+    components: { TodoEntry: './TodoEntry.html' },
+
+    data: () => ({
+        showCustomMenu: false,
+        showAddPrice: false,
+        customItemName: null,
+        customItemPrice: null,
+    }),
+
+    helpers: {formatPrice},
+
+    methods: {
+
+        addCustomItem() {
+            const {items} = this.store.get();
+            const {customItemName, customItemPrice, category} = this.get();
+            if (customItemName) {
+                const item = {name: customItemName, price: Number.parseFloat(customItemPrice), category};
+                this.store.set({ items: [...items, item] });
+                this.set({
+                    customItemName: null,
+                    customItemPrice: null,
+                    showAddPrice: false,
+                    showCustomMenu: false,
+                });
+            }
+        },
+    },
+}
+</script>

@@ -1,0 +1,151 @@
+<style>
+    .bigbutton {
+        height: 65px;
+        padding: 0;
+        border: 0
+    }
+
+    .bigbutton button {
+        height: 65px;
+    }
+
+    .bigbutton button input[type=checkbox] {
+        margin: 0 1em;
+        -ms-transform: scale(2);
+        -moz-transform: scale(2);
+        -webkit-transform: scale(2);
+    }
+
+</style>
+
+<div class="input-group mb-1">
+    <div class="input-group-prepend">
+        <button
+            class="btn btn-outline-dark dropdown-toggle"
+            type="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            on:click="set({showMenu: !showMenu})">
+        </button>
+
+
+        <div class="dropdown-menu"  class:show="showMenu">
+            <button class="dropdown-item">save</button>
+
+            <button class="dropdown-item" on:click="set({showRename: !showRename, showButton: showRename, showMenu: false})">
+                rename
+            </button>
+
+            <button class="dropdown-item" on:click="set({showReprice: !showReprice, showButton: showReprice, showMenu: false})">
+                {#if item.price} change price {:else} set price {/if}
+            </button>
+
+            <div role="separator" class="dropdown-divider"></div>
+            <button class="dropdown-item" on:click="deleteItem()"> delete </button>
+        </div>
+
+        {#if showRename}
+        <div class="input-group" transition:fade>
+            <input type="text" placeholder="{item.name}" bind:value="newName" transition:fade/>
+            <button class="btn btn-info" on:click="rename(newName)">
+                done
+            </button>
+        </div>
+        {/if}
+
+        {#if showReprice}
+        <div class="input-group" transition:fade>
+            <input type="text" placeholder="price" bind:value="newPrice" transition:fade/>
+            <button class="btn btn-info" on:click="reprice(newPrice)">done</button>
+        </div>
+        {/if}
+
+
+    </div>
+
+    <div class="form-control bigbutton">
+        <button class="btn btn-lg btn-block btn-outline-success list-group-item-action d-flex align-items-center" on:click="checkItem()" disabled={!showButton}>
+            {#if showButton}
+            <input type="checkbox" checked={item.done}/>
+            {/if}
+            {item.name} {#if item.price} ({formatPrice(item.price)}) {/if}
+        </button>
+    </div>
+
+</div>
+
+<script>
+import { fade } from 'svelte-transitions';
+import {formatPrice} from './helpers';
+export default {
+    transitions: {fade},
+    data: () => ({
+        newName: null,
+        newPrice: null,
+
+        showButton: true,
+        showMenu: false,
+        showRename: false,
+        showReprice: false,
+    }),
+
+    oncreate() {},
+
+    onstate({current: {showMenu}}) { },
+
+    helpers: {formatPrice},
+
+    methods: {
+        updateItem(diff) {
+            const {items} = this.store.get();
+            const {idx} = this.get();
+            console.debug(`checkItem(${idx})`)
+
+            const newItems = [...items];
+            newItems[idx] = {...newItems[idx], ...diff}
+
+            this.store.set({items: newItems});
+        },
+
+        hideAll() {
+            this.set({
+                showMenu: false,
+                showRename: false,
+                showReprice: false,
+            });
+        },
+
+        checkItem() {
+            const {item:{done}} = this.get();
+            this.updateItem({done: !done})
+        },
+
+        rename(name) {
+            console.debug(`rename(${name})`)
+            this.updateItem({name})
+            this.hideAll()
+        },
+
+        reprice(priceString) {
+            const price = parseFloat(priceString);
+            if (!Number.isNaN(price)){
+                console.debug(`reprice(${price})`)
+                this.updateItem({price})
+                this.hideAll()
+            }
+        },
+
+        deleteItem() {
+            const {items} = this.store.get();
+            const {idx} = this.get();
+            console.debug(`deleteItem(${idx})`);
+
+            const newItems = [...items.filter((i, index) => index !== idx)];
+            this.store.set({items: newItems});
+            this.hideAll();
+        },
+
+    },
+}
+</script>

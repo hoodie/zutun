@@ -63,10 +63,10 @@ store.compute('progress', ['items'],
 			} else {
 				progress.open += 1;
 			}
-			progress.all+= 1;
-			progress.percent = Math.floor((progress.done / progress.all) * 100)
+			progress.all += 1;
+			progress.percent = Math.floor((progress.done / progress.all) * 100);
 
-			progresses[item.category] = progress
+			progresses[item.category] = progress;
 
 		});
 		return progresses;

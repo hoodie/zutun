@@ -16,7 +16,7 @@
                 {#each $categories as category}
                 <div class="col-xl-4 col-md-6">
                     {#if $items.filter(({category: c}) => c === category).length > 0}
-                    <Todo category="{category}" on:showCatalogue=showCatalogue() />
+                    <Todos category="{category}" on:showCatalogue=showCatalogue() />
                     {/if}
                 </div>
                 {/each}
@@ -32,7 +32,7 @@ export default {
 
     components: {
         Catalogue: './Catalogue.html',
-        Todo: './Todo.html'
+        Todos: './TodoList.html'
     },
 
     data: () => ({
