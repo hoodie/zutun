@@ -59,7 +59,7 @@
 
         {#if showReprice}
         <div class="input-group" transition:fade>
-            <input class="" type="text" style="width: 80%" placeholder="{item.name} for {formatPrice(item.price)}" bind:value="newPrice" transition:fade/>
+            <input class="" type="number" style="width: 80%" placeholder="{item.name} for {formatPrice(item.price)}" bind:value="newPrice" transition:fade/>
             <button class="btn btn-warning" style="width: 20%" on:click="reprice(newPrice)">
                 {#if item.price} change {:else} set {/if}
             </button>
