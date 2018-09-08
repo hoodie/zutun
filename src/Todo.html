@@ -47,110 +47,125 @@
     </div>
 
     <div class="card-body">
-            <div class="row mb-4">
-                {#each $items as {name, done, price, category: itemCat}, idx}
-                {#if category === itemCat}
-                <div class="input-group mb-1">
+        <div class="row mb-4">
+            {#each $items as {name, done, price, category: itemCat}, idx}
+            {#if category === itemCat}
+            <div class="input-group mb-1">
 
-                    <div class="input-group-prepend">
-                        <button
-                            class="btn btn-outline-dark dropdown-toggle"
-                            type="button"
-                            data-toggle="dropdown"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            on:click="toggleItemMenu(idx)"></button>
+                <div class="input-group-prepend">
+                    <button
+                        class="btn btn-outline-dark dropdown-toggle"
+                        type="button"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        on:click="toggleItemMenu(idx)"></button>
 
-                        <div class="dropdown-menu {showMenu(idx)}">
-                            <button class="dropdown-item">save</button>
-                            <button class="dropdown-item" on:click="toggleItemRename(idx, name)">rename</button>
-                            <div role="separator" class="dropdown-divider"></div>
-                            <button class="dropdown-item" on:click="deleteItem(idx)"> delete </button>
-                        </div>
-                        {#if showRename(idx)}
-                        <div class="input-group" transition:fade>
-                            <input type="text" placeholder="{name}" bind:value="newItemName" transition:fade/>
-                            <button class="btn btn-info" on:click="renameItem(idx)">done</button>
-                        </div>
+                    <div class="dropdown-menu {showMenu(idx)}">
+                        <button class="dropdown-item">save</button>
+                        <button class="dropdown-item" on:click="toggleItemRename(idx, name)">rename</button>
+                        <button class="dropdown-item" on:click="toggleItemReprice(idx)">
+                        {#if price}
+                        change price
+                        {:else}
+                        set price
                         {/if}
-
+                        </button>
+                        <div role="separator" class="dropdown-divider"></div>
+                        <button class="dropdown-item" on:click="deleteItem(idx)"> delete </button>
                     </div>
 
-                    {#if !showRename(idx)}
-                    <div class="form-control bigbutton">
-                        <button
-                            class="btn btn-outline-success list-group-item-action d-flex align-items-center"
-                            on:click="checkItem(idx)">
-                            <input type="checkbox" checked={done}/>
-                            {name}
-                            {#if price}
-                            ({formatPrice(price)})
-                            {/if}
-                        </button>
+                    {#if showRename(idx)}
+                    <div class="input-group" transition:fade>
+                        <input type="text" placeholder="{name}" bind:value="newItemName" transition:fade/>
+                        <button class="btn btn-info" on:click="renameItem(idx)">done</button>
                     </div>
                     {/if}
 
+                    {#if showReprice(idx)}
+                    <div class="input-group" transition:fade>
+                        <input type="text" placeholder="price" bind:value="newItemPrice" transition:fade/>
+                        <button class="btn btn-info" on:click="repriceItem(idx)">done</button>
+                    </div>
+                    {/if}
 
+                </div>
+
+                {#if !hideButton(idx)}
+                <div class="form-control bigbutton">
+                    <button
+                        class="btn btn-outline-success list-group-item-action d-flex align-items-center"
+                        on:click="checkItem(idx)">
+                        <input type="checkbox" checked={done}/>
+                        {name}
+                        {#if price}
+                        ({formatPrice(price)})
+                        {/if}
+                    </button>
                 </div>
                 {/if}
-                {/each}
+
+
             </div>
+            {/if}
+            {/each}
+        </div>
 
-            <div class="row addbutton">
+        <div class="row addbutton">
 
-                <div class="input-group">
-                    <div class="input-group-prepend">
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-secondary"
-                            on:click="toggleAddMenu()">
-                            {showCustomMenu ? '-' : '+'}
-                        </button>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            aria-label="item"
-                            style="display: {showCustomMenu ? 'block' : 'none'};"
-                            placeholder="new item"
-                            bind:value=customItemName/>
-
-                        <button
-                            type="button"
-                            class="btn btn-outline-warning"
-                            style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};" on:click="toggleShowAddPrice()">
-                            €
-                        </button>
-                    </div>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            aria-label="price"
-                    style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};" placeholder="price"
-                            bind:value=customItemPrice/>
-
+            <div class="input-group">
+                <div class="input-group-prepend">
 
                     <button
                         type="button"
-                        class="btn btn-success"
-                        style="display: {!showCustomMenu ? 'block' : 'none'};"
-                        on:click="fire('showCatalogue')">
-                        add
+                        class="btn btn-outline-secondary"
+                        on:click="toggleAddMenu()">
+                        {showCustomMenu ? '-' : '+'}
                     </button>
+
+                    <input
+                        type="text"
+                        class="form-control"
+                        aria-label="item"
+                        style="display: {showCustomMenu ? 'block' : 'none'};"
+                        placeholder="new item"
+                        bind:value=customItemName/>
 
                     <button
                         type="button"
-                        class="btn btn-primary"
-                        style="display: {showCustomMenu? 'block' : 'none'};"
-                        on:click="addCustomItem()">
-                        add
+                        class="btn btn-outline-warning"
+                        style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};" on:click="toggleShowAddPrice()">
+                        €
                     </button>
-
                 </div>
 
+                    <input
+                        type="text"
+                        class="form-control"
+                        aria-label="price"
+                style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};" placeholder="price"
+                        bind:value=customItemPrice/>
+
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    style="display: {!showCustomMenu ? 'block' : 'none'};"
+                    on:click="fire('showCatalogue')">
+                    add
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    style="display: {showCustomMenu? 'block' : 'none'};"
+                    on:click="addCustomItem()">
+                    add
+                </button>
+
             </div>
+
+        </div>
 
     </div>
 </div>
@@ -167,9 +182,15 @@ export default {
 
     data: () => ({
         items: [],
+
         itemMenu: -1,
         itemRename: -1,
+        itemReprice: -1,
+        hiddenButton: -1,
+
         newItemName: null,
+        newItemPrice: null,
+
         showCustomMenu: false,
         showAddPrice: false,
         customItemName: null,
@@ -178,18 +199,19 @@ export default {
 
     helpers: {
         formatPrice: (price /*: number*/)/*: string*/ =>
-            (typeof price === 'number') && price.toFixed(2).toString().replace('.', ',') + `€`
+            (typeof price === 'number') && price.toFixed(2).toString().replace('.', ',') + `€`,
     },
 
     computed: {
         showMenu: ({itemMenu}) => (idx) => itemMenu === idx ? 'show' : '',
-        showRename: ({itemRename}) => (idx) => itemRename === idx ? 'show' : ''
+        showRename: ({itemRename}) => (idx) => itemRename === idx ? 'show' : '',
+        showReprice: ({itemReprice}) => (idx) => itemReprice === idx ? 'show' : '',
+        hideButton: ({hiddenButton}) => (idx) => hiddenButton === idx ,
     },
     transitions: {fade},
     methods: {
         checkItem(idx) {
             const {items} = this.store.get();
-
             items[idx].done = !items[idx].done;
             this.store.set({ items: [...items] });
         },
@@ -209,6 +231,47 @@ export default {
             }
         },
 
+        renameItem(idx){
+            const {newItemName} = this.get();
+            const {items} = this.store.get();
+            const newItems = items;
+            newItems[idx].name = newItemName;
+            this.store.set({items: [...newItems]})
+            this.set({newItemName: null});
+            this.hideAll()
+        },
+
+        repriceItem(idx){
+            const {newItemPrice} = this.get();
+            const {items} = this.store.get();
+            const newItems = items;
+            const price = parseFloat(newItemPrice);
+            if (!Number.isNaN(price)){
+                newItems[idx].price = price;
+                this.store.set({items: [...newItems]})
+                console.debug({newItems, newItemPrice})
+                this.set({newItemPrice: null});
+            }
+            this.hideAll()
+        },
+
+        deleteItem(idx) {
+            const {items} = this.store.get();
+
+            const newItems = [...items.filter((i, index) => index !== idx)];
+            this.set({itemMenu: -1});
+            this.store.set({items: newItems})
+        },
+
+        hideAll() {
+            this.set({
+                hiddenButton: -1,
+                itemRename: -1,
+                itemReprice: -1,
+                itemMenu: -1
+            })
+        },
+
         toggleAddMenu() {
             const {showCustomMenu} = this.get();
             this.set({
@@ -224,20 +287,22 @@ export default {
 
         toggleItemRename(idx, name) {
             const {itemRename} = this.get();
-            if (itemRename== idx) {
-                this.set({itemRename: -1 })
+            if (itemRename == idx) {
+                this.set({itemRename: -1})
             } else {
-                this.set({itemRename: idx, itemMenu: -1, newItemName: name})
+                this.hideAll();
+                this.set({itemRename: idx, newItemName: name, hiddenButton: idx})
             }
         },
 
-        renameItem(idx){
-            const {newItemName} = this.get();
-            const {items} = this.store.get();
-            const newItems = items;
-            newItems[idx].name = newItemName;
-            this.store.set({items: [...newItems]})
-            this.set({itemRename: -1, newItemName: null})
+        toggleItemReprice(idx) {
+            const {itemReprice} = this.get();
+            if (itemReprice == idx) {
+                this.set({itemReprice: -1})
+            } else {
+                this.hideAll();
+                this.set({itemReprice: idx, hiddenButton: idx})
+            }
         },
 
         toggleItemMenu(idx) {
@@ -245,17 +310,12 @@ export default {
             if (itemMenu == idx) {
                 this.set({itemMenu: -1 })
             } else {
+                this.hideAll();
                 this.set({itemMenu: idx})
             }
         },
 
-        deleteItem(idx) {
-            const {items} = this.store.get();
 
-            const newItems = [...items.filter((i, index) => index !== idx)];
-            this.set({itemMenu: -1});
-            this.store.set({items: newItems})
-        }
     },
 }
 </script>
