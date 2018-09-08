@@ -1,12 +1,12 @@
 <style>
-    .addbutton {
-        float: right;
-    }
+.card {
+    margin-bottom: 15px
+}
 </style>
 
 <div class="card" transition:fade>
     <div class="card-header">
-        <h5>
+        <h4>
             {category}
             {#if $sumByCategory[category]}
             <small> ( {formatPrice($sumByCategory[category] )} ) </small>
@@ -14,7 +14,8 @@
             <button type="button" class="close" title="Close" on:click="fire('close', {name})">
                 <span aria-hidden="true">&times;</span>
             </button>
-        </h5>
+        </h4>
+
         <div class="progress" style="height: 30px">
             <div class="progress-bar"
                 role="progressbar"
@@ -31,71 +32,82 @@
 
     <div class="card-body">
         <div class="row mb-4">
-            {#each $items as {name, done, price, category: itemCat}, idx}
-            {#if category === itemCat}
+            {#each $items as item, idx}
+            {#if category === item.category}
 
-            <TodoEntry
-                item="{{name, done, price, category, idx}}"
-                idx="{idx}"
-            />
+            <TodoEntry item="{item}" idx="{idx}" />
 
             {/if}
             {/each}
         </div>
 
-        <div class="row addbutton">
+    </div>
 
-            <div class="input-group">
-                <div class="input-group-prepend">
+    <div class="card-footer">
+        <div class="row justify-content-end">
+            <div class="col btn-group">
 
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary"
-                        on:click="set({showCustomMenu: !showCustomMenu, showAddPrice: false})">
-                        {showCustomMenu ? '-' : '+'}
-                    </button>
+                {#if !showCustomMenu}
+                <button type="button" class="btn btn-danger" on:click="clear(category)"> &times; clear </button>
+                <button type="button" class="btn btn-secondary" on:click="sort(category)"> &#9776; sort </button>
+                {/if}
+
+            </div>
+            <div class="{showCustomMenu ? 'col-12' : 'col-4'}">
+
+                <div class="input-group">
+                    <div class="input-group-prepend">
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary"
+                            on:click="set({showCustomMenu: !showCustomMenu, showAddPrice: false})">
+                            {showCustomMenu ? '-' : '+'}
+                        </button>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            aria-label="item"
+                            style="display: {showCustomMenu ? 'block' : 'none'};"
+                            placeholder="new item"
+                            bind:value=customItemName/>
+
+                        <button
+                            type="button"
+                            class="btn btn-outline-warning"
+                            style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};"
+                            on:click="set({showAddPrice: !showAddPrice})">
+                            €
+                        </button>
+                    </div>
 
                     <input
                         type="text"
                         class="form-control"
-                        aria-label="item"
-                        style="display: {showCustomMenu ? 'block' : 'none'};"
-                        placeholder="new item"
-                        bind:value=customItemName/>
+                        aria-label="price"
+                        style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};"
+                        placeholder="price"
+                        bind:value=customItemPrice/>
+
 
                     <button
                         type="button"
-                        class="btn btn-outline-warning"
-                        style="display: {showCustomMenu && !showAddPrice  ? 'block' : 'none'};"
-                        on:click="set({showAddPrice: !showAddPrice})">
-                        €
+                        class="btn btn-success"
+                        style="display: {!showCustomMenu ? 'block' : 'none'};"
+                        on:click="fire('showCatalogue')">
+                        add
                     </button>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        style="display: {showCustomMenu? 'block' : 'none'};"
+                        on:click="addCustomItem()">
+                        add
+                    </button>
+
                 </div>
-
-                <input
-                    type="text"
-                    class="form-control"
-                    aria-label="price"
-                    style="display: {showCustomMenu && showAddPrice ? 'block' : 'none'};"
-                    placeholder="price"
-                    bind:value=customItemPrice/>
-
-
-                <button
-                    type="button"
-                    class="btn btn-success"
-                    style="display: {!showCustomMenu ? 'block' : 'none'};"
-                    on:click="fire('showCatalogue')">
-                    add
-                </button>
-
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    style="display: {showCustomMenu? 'block' : 'none'};"
-                    on:click="addCustomItem()">
-                    add
-                </button>
 
             </div>
 
@@ -137,6 +149,26 @@ export default {
                 });
             }
         },
+
+        sort(cat) {
+            const {items} = this.store.get();
+            console.debug({cat})
+            const catItems = items.filter(({category}) => cat === category).sort((a, b) => a.done !== b.done )
+            const otherItems = items.filter(({category}) => cat !== category)
+
+            this.store.set({items: [...catItems, ...otherItems]});
+        },
+
+        clear(cat) {
+            const {items} = this.store.get();
+            console.debug({cat})
+            const catItems = items.filter(({category}) => cat === category)
+            catItems.forEach(item => item.done = false);
+            const otherItems = items.filter(({category}) => cat !== category)
+
+            this.store.set({items: [...catItems, ...otherItems]});
+        },
+
     },
 }
 </script>

@@ -38,6 +38,7 @@ store.on('state', ({current}) => {
 
 store.compute('categories', ['items'],
 	(items) => Array.from(new Set(items.map(({category}) => category)))
+	.sort()
 );
 
 store.compute('sumByCategory', ['items'],

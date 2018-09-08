@@ -2,7 +2,7 @@
     @import url("../node_modules/bootstrap/dist/css/bootstrap.min.css");
 </style>
 
-<div class="container-fluid">
+<div class="container">
     <div class="row">
 
         {#if showCatalogue || $items.length === 0}
@@ -12,15 +12,13 @@
         {/if}
 
         <div class="col" transition:slide>
-            <div class="row">
                 {#each $categories as category}
-                <div class="col-xl-4 col-md-6">
+                <div class="card-column">
                     {#if $items.filter(({category: c}) => c === category).length > 0}
                     <Todos category="{category}" on:showCatalogue=showCatalogue() />
                     {/if}
                 </div>
                 {/each}
-            </div>
         </div>
 
     </div>
