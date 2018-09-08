@@ -4,7 +4,7 @@
 }
 </style>
 
-<div class="card" transition:fade>
+<div class="card" transition:slide>
     <div class="card-header">
         <h4 on:click="set({foldList: !foldList})">
             {category}
@@ -13,11 +13,7 @@
             {/if}
             <button type="button" class="close" title="Close">
                 <span aria-hidden="true">
-                {#if foldList}
-                &#95;
-                {:else}
-                &square;
-                {/if}
+                {#if foldList} &#95; {:else} &square; {/if}
                 </span>
             </button>
         </h4>
@@ -37,7 +33,7 @@
     </div>
 
     {#if foldList}
-    <div class="card-body">
+    <div class="card-body" transition:slide>
         <div class="row mb-4">
             {#each $items as item, idx}
             {#if category === item.category}
@@ -50,7 +46,7 @@
 
     </div>
 
-    <div class="card-footer">
+    <div class="card-footer" transition:slide>
         <div class="row justify-content-end">
             <div class="col btn-group">
 
@@ -125,11 +121,11 @@
 </div>
 
 <script>
-import { fade } from 'svelte-transitions';
-import {formatPrice} from './helpers';
+import { fade, slide } from 'svelte-transitions';
+import { formatPrice } from './helpers';
 
 export default {
-    transitions: {fade},
+    transitions: { fade, slide },
     components: { TodoEntry: './TodoEntry.html' },
 
     data: () => ({

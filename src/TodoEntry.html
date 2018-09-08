@@ -18,7 +18,7 @@
 
 </style>
 
-<div class="input-group mb-1">
+<div class="input-group mb-1" transition:slide>
     <div class="input-group-prepend">
         <button
             class="btn btn-outline-dark dropdown-toggle"
@@ -78,10 +78,10 @@
 </div>
 
 <script>
-import { fade } from 'svelte-transitions';
-import {formatPrice} from './helpers';
+import { fade, slide } from 'svelte-transitions';
+import { formatPrice } from './helpers';
 export default {
-    transitions: {fade},
+    transitions: { fade, slide },
     data: () => ({
         newName: null,
         newPrice: null,
