@@ -50,7 +50,10 @@
             <input bind:value=newItemName value="" placeholder="name"/>
             {#if newItemName}
             <input bind:value=newItemPrice placeholder="price" type="text"/>
-            <input bind:value=newItemCategory placeholder="category" type="text"/>
+            <input bind:value=newItemCategory placeholder="category" type="text" list="categoriesSuggestions" />
+            <datalist id="categoriesSuggestions">
+            {#each $categories as category}<option>{category}</option>{/each}
+            </datalist>
             <div class="input-group-append">
                 <button on:click="addNewItem()" class="btn btn-success" type="button">add</button>
             </div>

@@ -7,7 +7,9 @@
 <section class="card" transition:slide>
     <div class="card-header">
         <h4 on:click="toggleFolded(category)">
+        <a href="#{category}" name="{category}">
             {category}
+        </a>
             {#if $sumByCategory[category]}
             <small> ( {formatPrice($sumByCategory[category] )} ) </small>
             {/if}
