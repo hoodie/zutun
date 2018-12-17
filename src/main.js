@@ -4,10 +4,13 @@ import App from './App.html';
 
 const storageKey = 'zutun';
 
-const store = new Store({
+class ZutunStore extends Store {}
+
+const store = new ZutunStore({
     items: [
         //{ name: "Milch", category: "shopping", price: .96, done: false },
     ],
+    folded: {},
     catalogue: {
         items: [
             { name: 'Milch', category: 'shopping', price: 0.85 },
@@ -26,13 +29,14 @@ const store = new Store({
 });
 
 const stored = JSON.parse(localStorage.getItem(storageKey));
+
 if (stored) {
     store.set(stored);
 }
 
 store.on('state', ({ current }) => {
-    const { catalogue, items } = current;
-    localStorage.setItem(storageKey, JSON.stringify({ catalogue, items }));
+    const { catalogue, items, folded } = current;
+    localStorage.setItem(storageKey, JSON.stringify({ catalogue, items, folded }));
     console.dir({ storeState: current });
 });
 

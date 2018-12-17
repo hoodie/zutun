@@ -6,14 +6,14 @@
 
 <section class="card" transition:slide>
     <div class="card-header">
-        <h4 on:click="set({foldList: !foldList})">
+        <h4 on:click="toggleFolded(category)">
             {category}
             {#if $sumByCategory[category]}
             <small> ( {formatPrice($sumByCategory[category] )} ) </small>
             {/if}
             <button type="button" class="close" title="Close">
                 <span aria-hidden="true">
-                {#if foldList} &#95; {:else} &square; {/if}
+                {#if !$folded[category]} &#95; {:else} &square; {/if}
                 </span>
             </button>
         </h4>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    {#if foldList}
+    {#if !$folded[category]}
     <div class="card-body" transition:slide>
         <div class="row mb-4">
             {#each $items as item, idx}
@@ -127,7 +127,6 @@
         components: { TodoEntry: './TodoEntry.html' },
 
         data: () => ({
-            foldList: false,
             showCustomMenu: false,
             showAddPrice: false,
             customItemName: null,
@@ -150,6 +149,13 @@
                         showCustomMenu: false,
                     });
                 }
+            },
+
+            toggleFolded(category) {
+                const { folded } = this.store.get();
+                folded[category] = !folded[category];
+                console.dir({ toggleFolded: folded });
+                this.store.set({ folded: { ...folded } });
             },
 
             sort(cat) {

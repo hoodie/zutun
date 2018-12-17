@@ -1,4 +1,10 @@
-<div class="card">
+<style>
+    .card {
+        margin-bottom: 15px;
+    }
+</style>
+
+<section class="card" transition:slide>
 	<div class="card-header">
 		<h5 on:click="set({foldList: !foldList})">
 			Overview
@@ -21,14 +27,16 @@
 			</label></div>
 		{/each} {/if}
 	</div>
-</div>
+</section>
 
 <script>
+    import { fade, slide } from 'svelte-transitions';
     import { categoryToBadge } from './helpers';
     export default {
+        transitions: { slide },
         helpers: { categoryToBadge },
         data: () => ({
-            foldList: true,
+            foldList: false,
         }),
         computed: {},
     };
