@@ -1,7 +1,7 @@
 <style>
-.card {
-    margin-bottom: 15px
-}
+    .card {
+        margin-bottom: 15px;
+    }
 </style>
 
 <div class="card" transition:slide>
@@ -121,59 +121,57 @@
 </div>
 
 <script>
-import { fade, slide } from 'svelte-transitions';
-import { formatPrice } from './helpers';
+    import { fade, slide } from 'svelte-transitions';
+    import { formatPrice } from './helpers';
 
-export default {
-    transitions: { fade, slide },
-    components: { TodoEntry: './TodoEntry.html' },
+    export default {
+        transitions: { slide },
+        components: { TodoEntry: './TodoEntry.html' },
 
-    data: () => ({
-        foldList: false,
-        showCustomMenu: false,
-        showAddPrice: false,
-        customItemName: null,
-        customItemPrice: null,
-    }),
+        data: () => ({
+            foldList: false,
+            showCustomMenu: false,
+            showAddPrice: false,
+            customItemName: null,
+            customItemPrice: null,
+        }),
 
-    helpers: {formatPrice},
+        helpers: { formatPrice },
 
-    methods: {
+        methods: {
+            addCustomItem() {
+                const { items } = this.store.get();
+                const { customItemName, customItemPrice, category } = this.get();
+                if (customItemName) {
+                    const item = { name: customItemName, price: Number.parseFloat(customItemPrice), category };
+                    this.store.set({ items: [...items, item] });
+                    this.set({
+                        customItemName: null,
+                        customItemPrice: null,
+                        showAddPrice: false,
+                        showCustomMenu: false,
+                    });
+                }
+            },
 
-        addCustomItem() {
-            const {items} = this.store.get();
-            const {customItemName, customItemPrice, category} = this.get();
-            if (customItemName) {
-                const item = {name: customItemName, price: Number.parseFloat(customItemPrice), category};
-                this.store.set({ items: [...items, item] });
-                this.set({
-                    customItemName: null,
-                    customItemPrice: null,
-                    showAddPrice: false,
-                    showCustomMenu: false,
-                });
-            }
+            sort(cat) {
+                const { items } = this.store.get();
+                console.debug({ cat });
+                const catItems = items.filter(({ category }) => cat === category).sort((a, b) => a.done !== b.done);
+                const otherItems = items.filter(({ category }) => cat !== category);
+
+                this.store.set({ items: [...catItems, ...otherItems] });
+            },
+
+            clear(cat) {
+                const { items } = this.store.get();
+                console.debug({ cat });
+                const catItems = items.filter(({ category }) => cat === category);
+                catItems.forEach(item => (item.done = false));
+                const otherItems = items.filter(({ category }) => cat !== category);
+
+                this.store.set({ items: [...catItems, ...otherItems] });
+            },
         },
-
-        sort(cat) {
-            const {items} = this.store.get();
-            console.debug({cat})
-            const catItems = items.filter(({category}) => cat === category).sort((a, b) => a.done !== b.done )
-            const otherItems = items.filter(({category}) => cat !== category)
-
-            this.store.set({items: [...catItems, ...otherItems]});
-        },
-
-        clear(cat) {
-            const {items} = this.store.get();
-            console.debug({cat})
-            const catItems = items.filter(({category}) => cat === category)
-            catItems.forEach(item => item.done = false);
-            const otherItems = items.filter(({category}) => cat !== category)
-
-            this.store.set({items: [...catItems, ...otherItems]});
-        },
-
-    },
-}
+    };
 </script>

@@ -61,34 +61,37 @@
 </div>
 
 <script>
-import {formatPrice} from './helpers';
-export default {
-    data: () => ({
-        newItemName: "",
-        newItemPrice: null,
-        newItemCategory: null,
-    }),
+    import { formatPrice } from './helpers';
+    export default {
+        data: () => ({
+            newItemName: '',
+            newItemPrice: null,
+            newItemCategory: null,
+        }),
 
-    helpers: { formatPrice },
+        helpers: { formatPrice },
 
-    methods: {
-        addNewItem() {
-            const { newItemName, newItemCategory } = this.get();
-            const { catalogue: { items }} = this.store.get();
-            const newItem = ({ name: newItemName, category: newItemCategory })
+        methods: {
+            addNewItem() {
+                const { newItemName, newItemCategory } = this.get();
+                const {
+                    catalogue: { items },
+                } = this.store.get();
+                const newItem = { name: newItemName, category: newItemCategory };
 
-            this.store.set({ catalogue: {items: [...items, newItem]}});
-            this.set({ newItemName: null, newItemCategory: null});
+                this.store.set({ catalogue: { items: [...items, newItem] } });
+                this.set({ newItemName: null, newItemCategory: null });
+            },
+
+            deleteItem(idx) {
+                const { newItemName, newItemCategory } = this.get();
+                const {
+                    catalogue: { items },
+                } = this.store.get();
+
+                this.store.set({ catalogue: { items: [...items.filter((itema, i) => i != idx)] } });
+                this.set({ newItemName: null, newItemCategory: null });
+            },
         },
-
-        deleteItem(idx) {
-            const { newItemName, newItemCategory } = this.get();
-            const { catalogue: { items }} = this.store.get();
-
-            this.store.set({ catalogue: { items: [ ...items.filter((itema, i) => i != idx) ] } });
-            this.set({ newItemName: null, newItemCategory: null});
-
-        }
-    }
-}
+    };
 </script>

@@ -2,20 +2,20 @@
     .bigbutton {
         height: 65px;
         padding: 0;
-        border: 0
+        border: 0;
     }
 
     .bigbutton button {
         height: 65px;
     }
 
-    .bigbutton button input[type=checkbox] {
+    .bigbutton button input[type='checkbox'] {
         margin: 0 1em;
+        transform: scale(2);
         -ms-transform: scale(2);
         -moz-transform: scale(2);
         -webkit-transform: scale(2);
     }
-
 </style>
 
 <div class="input-group mb-1" transition:slide>
@@ -78,77 +78,78 @@
 </div>
 
 <script>
-import { fade, slide } from 'svelte-transitions';
-import { formatPrice } from './helpers';
-export default {
-    transitions: { fade, slide },
-    data: () => ({
-        newName: null,
-        newPrice: null,
+    import { fade, slide } from 'svelte-transitions';
+    import { formatPrice } from './helpers';
+    export default {
+        transitions: { fade, slide },
+        data: () => ({
+            newName: null,
+            newPrice: null,
 
-        showButton: true,
-        showMenu: false,
-        showRename: false,
-        showReprice: false,
-    }),
+            showButton: true,
+            showMenu: false,
+            showRename: false,
+            showReprice: false,
+        }),
 
-    oncreate() {},
+        oncreate() {},
 
-    onstate({current: {showMenu}}) { },
+        onstate({ current: { showMenu } }) {},
 
-    helpers: {formatPrice},
+        helpers: { formatPrice },
 
-    methods: {
-        updateItem(diff) {
-            const {items} = this.store.get();
-            const {idx} = this.get();
-            console.debug(`checkItem(${idx})`)
+        methods: {
+            updateItem(diff) {
+                const { items } = this.store.get();
+                const { idx } = this.get();
+                console.debug(`checkItem(${idx})`);
 
-            const newItems = [...items];
-            newItems[idx] = {...newItems[idx], ...diff}
+                const newItems = [...items];
+                newItems[idx] = { ...newItems[idx], ...diff };
 
-            this.store.set({items: newItems});
+                this.store.set({ items: newItems });
+            },
+
+            hideAll() {
+                this.set({
+                    showButton: true,
+                    showMenu: false,
+                    showRename: false,
+                    showReprice: false,
+                });
+            },
+
+            checkItem() {
+                const {
+                    item: { done },
+                } = this.get();
+                this.updateItem({ done: !done });
+            },
+
+            rename(name) {
+                console.debug(`rename(${name})`);
+                this.updateItem({ name });
+                this.hideAll();
+            },
+
+            reprice(priceString) {
+                const price = parseFloat(priceString);
+                if (!Number.isNaN(price)) {
+                    console.debug(`reprice(${price})`);
+                    this.updateItem({ price });
+                    this.hideAll();
+                }
+            },
+
+            deleteItem() {
+                const { items } = this.store.get();
+                const { idx } = this.get();
+                console.debug(`deleteItem(${idx})`);
+
+                const newItems = [...items.filter((i, index) => index !== idx)];
+                this.store.set({ items: newItems });
+                this.hideAll();
+            },
         },
-
-        hideAll() {
-            this.set({
-                showButton: true,
-                showMenu: false,
-                showRename: false,
-                showReprice: false,
-            });
-        },
-
-        checkItem() {
-            const {item:{done}} = this.get();
-            this.updateItem({done: !done})
-        },
-
-        rename(name) {
-            console.debug(`rename(${name})`)
-            this.updateItem({name})
-            this.hideAll()
-        },
-
-        reprice(priceString) {
-            const price = parseFloat(priceString);
-            if (!Number.isNaN(price)){
-                console.debug(`reprice(${price})`)
-                this.updateItem({price})
-                this.hideAll()
-            }
-        },
-
-        deleteItem() {
-            const {items} = this.store.get();
-            const {idx} = this.get();
-            console.debug(`deleteItem(${idx})`);
-
-            const newItems = [...items.filter((i, index) => index !== idx)];
-            this.store.set({items: newItems});
-            this.hideAll();
-        },
-
-    },
-}
+    };
 </script>

@@ -1,5 +1,5 @@
 <style>
-    @import url("../node_modules/bootstrap/dist/css/bootstrap.min.css");
+    @import url('../node_modules/bootstrap/dist/css/bootstrap.min.css');
 </style>
 
 <div class="container">
@@ -25,42 +25,43 @@
 </div>
 
 <script>
-import { slide } from 'svelte-transitions';
-export default {
-
-    components: {
-        Catalogue: './Catalogue.html',
-        Todos: './TodoList.html'
-    },
-
-    data: () => ({
-        showCatalogue: !true
-    }),
-
-    methods: {
-        addItem({name, category, price}) {
-            const {items} = this.store.get();
-            const item = {name, category, price, done: false}
-
-            this.store.set({items:  [...items, item]})
-            this.closeCatalogue(1500)
+    import { slide } from 'svelte-transitions';
+    export default {
+        components: {
+            Catalogue: './Catalogue.html',
+            Todos: './TodoList.html',
         },
 
-        showCatalogue() {
-            clearTimeout(this.TIMEOUT);
-            console.debug(`showing catalogue`);
-            this.set({ showCatalogue: true});
-        },
+        data: () => ({
+            showCatalogue: !true,
+        }),
 
-        closeCatalogue(timeout) {
-            console.debug(`closing Catalogue in ${timeout}ms`);
-            if (this.TIMEOUT) {
+        methods: {
+            addItem({ name, category, price }) {
+                const { items } = this.store.get();
+                const item = { name, category, price, done: false };
+
+                this.store.set({ items: [...items, item] });
+                this.closeCatalogue(1500);
+            },
+
+            showCatalogue() {
                 clearTimeout(this.TIMEOUT);
-            }
-            this.TIMEOUT = setTimeout(() => {this.set({showCatalogue: false})}, timeout)
-        },
-    },
+                console.debug(`showing catalogue`);
+                this.set({ showCatalogue: true });
+            },
 
-    transitions: {slide}
-}
+            closeCatalogue(timeout) {
+                console.debug(`closing Catalogue in ${timeout}ms`);
+                if (this.TIMEOUT) {
+                    clearTimeout(this.TIMEOUT);
+                }
+                this.TIMEOUT = setTimeout(() => {
+                    this.set({ showCatalogue: false });
+                }, timeout);
+            },
+        },
+
+        transitions: { slide },
+    };
 </script>
