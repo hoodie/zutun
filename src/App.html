@@ -12,13 +12,16 @@
         {/if}
 
         <div class="col" transition:slide>
-                {#each $categories as category}
-                <div class="card-column">
-                    {#if $items.filter(({category: c}) => c === category).length > 0}
-                    <Todos category="{category}" on:showCatalogue=showCatalogue() />
-                    {/if}
-                </div>
-                {/each}
+            <div class="card-column">
+                <Overview items={$items}/>
+            </div>
+            {#each $categories as category}
+            <div class="card-column">
+                {#if $items.filter(({category: c}) => c === category).length > 0}
+                <Todos category="{category}" on:showCatalogue=showCatalogue() />
+                {/if}
+            </div>
+            {/each}
         </div>
 
     </div>
@@ -30,6 +33,7 @@
         components: {
             Catalogue: './Catalogue.html',
             Todos: './TodoList.html',
+            Overview: './Overview.html',
         },
 
         data: () => ({

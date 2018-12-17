@@ -1,0 +1,35 @@
+<div class="card">
+	<div class="card-header">
+		<h5 on:click="set({foldList: !foldList})">
+			Overview
+			<button type="button" class="close" title="Close">
+				<span aria-hidden="true">
+					{#if foldList} &#95; {:else} &square; {/if}
+				</span>
+			</button>
+		</h5>
+
+	</div>
+	<div class="card-body">
+		{#if foldList} {#each items as item}
+		<div class="checkbox">
+			<label>
+				<input type="checkbox" disabled checked="{item.done}" /> { item.name }
+				<span class="badge { categoryToBadge(item.category)} ">
+					{ item.category}
+				</span>
+			</label></div>
+		{/each} {/if}
+	</div>
+</div>
+
+<script>
+    import { categoryToBadge } from './helpers';
+    export default {
+        helpers: { categoryToBadge },
+        data: () => ({
+            foldList: true,
+        }),
+        computed: {},
+    };
+</script>

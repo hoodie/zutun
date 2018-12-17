@@ -4,7 +4,7 @@
     }
 </style>
 
-<div class="card" transition:slide>
+<section class="card" transition:slide>
     <div class="card-header">
         <h4 on:click="set({foldList: !foldList})">
             {category}
@@ -37,9 +37,7 @@
         <div class="row mb-4">
             {#each $items as item, idx}
             {#if category === item.category}
-
             <TodoEntry item="{item}" idx="{idx}" />
-
             {/if}
             {/each}
         </div>
@@ -118,7 +116,7 @@
     </div>
     {/if}
 
-</div>
+</section>
 
 <script>
     import { fade, slide } from 'svelte-transitions';
